@@ -1,0 +1,57 @@
+private void transform (HSSFCell cellOld, XSSFCell cellNew) {
+    cellNew.setCellComment (cellOld.getCellComment ());
+    Integer hash = cellOld.getCellStyle ().hashCode ();
+    if (! this.styleMap.containsKey (hash)) {
+        this.transform (hash, cellOld.getCellStyle (), this.workbookNew.createCellStyle ());
+    }
+    cellNew.setCellStyle (this.styleMap.get (hash));
+    switch (cellOld.getCellType ()) {
+        case Cell.CELL_TYPE_BLANK :
+            break;
+        case Cell.CELL_TYPE_BOOLEAN :
+            cellNew.setCellValue (cellOld.getBooleanCellValue ());
+            break;
+        case Cell.CELL_TYPE_ERROR :
+            cellNew.setCellValue (cellOld.getErrorCellValue ());
+            break;
+        case Cell.CELL_TYPE_FORMULA :
+            cellNew.setCellValue (cellOld.getCellFormula ());
+            break;
+        case Cell.CELL_TYPE_NUMERIC :
+            cellNew.setCellValue (cellOld.getNumericCellValue ());
+            break;
+        case Cell.CELL_TYPE_STRING :
+            cellNew.setCellValue (cellOld.getStringCellValue ());
+            break;
+        default :
+            System.out.println ("transform: Unbekannter Zellentyp " + cellOld.getCellType ());
+    }
+}
+
+
+private void transform (HSSFCell cellOld, XSSFCell cellNew) {
+    cellNew.setCellComment (cellOld.getCellComment ());
+    Integer hash = cellOld.getCellStyle ().hashCode ();
+    if (! this.styleMap.containsKey (hash)) {
+        this.transform (hash, cellOld.getCellStyle (), this.workbookNew.createCellStyle ());
+    }
+    cellNew.setCellStyle (this.styleMap.get (hash));
+    int cellType = cellOld.getCellType ();
+    if (Cell.CELL_TYPE_BLANK == cellType) {
+        //do nothing
+    } else if (Cell.CELL_TYPE_BOOLEAN == cellType) {
+        cellNew.setCellValue (cellOld.getBooleanCellValue ());
+    } else if (Cell.CELL_TYPE_ERROR == cellType) {
+        cellNew.setCellValue (cellOld.getErrorCellValue ());
+    } else if (Cell.CELL_TYPE_FORMULA == cellType) {
+        cellNew.setCellValue (cellOld.getCellFormula ());
+    } else if (Cell.CELL_TYPE_NUMERIC == cellType) {
+        cellNew.setCellValue (cellOld.getNumericCellValue ());
+    } else if (Cell.CELL_TYPE_STRING == cellType) {
+        cellNew.setCellValue (cellOld.getStringCellValue ());
+    } else {
+        System.out.println ("transform: Unbekannter Zellentyp " + cellOld.getCellType ());
+    }
+}
+
+

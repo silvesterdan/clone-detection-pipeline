@@ -1,0 +1,34 @@
+public void onPageScrollStateChanged (int state) {
+    if (state == ViewPager.SCROLL_STATE_IDLE) {
+        PagerAdapter pagerAdapter = viewPager.getAdapter ();
+        if (pagerAdapter != null) {
+            int itemCount = pagerAdapter.getCount ();
+            if (itemCount < 2) {
+                return;
+            }
+            int index = viewPager.getCurrentItem ();
+            if (index == 0) {
+                viewPager.setCurrentItem (itemCount - 2, false);
+            } else if (index == itemCount - 1) {
+                viewPager.setCurrentItem (1, false);
+            }
+        }
+    }
+}
+
+
+public void onPageScrollStateChanged (int state) {
+    if (state == ViewPager.SCROLL_STATE_IDLE) {
+        PagerAdapter pagerAdapter = viewPager.getAdapter ();
+        if (pagerAdapter != null && pagerAdapter.getCount () >= 2) {
+            int index = viewPager.getCurrentItem ();
+            if (index == 0) {
+                viewPager.setCurrentItem (pagerAdapter.getCount () - 2, false);
+            } else if (index == pagerAdapter.getCount () - 1) {
+                viewPager.setCurrentItem (1, false);
+            }
+        }
+    }
+}
+
+
