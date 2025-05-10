@@ -67,8 +67,7 @@ In the old scripts each folder had its own hash-map and ID counter; the map was 
 | Consolidate preprocessing into `run_preprocess.py` | ✅ |
 | Replace noisy per-file logging with per-split summaries | ✅ |
 | Expose `--root` / `--seed` flags via `argparse` | 🟡 |
-| Add unit tests for brace-based method extractor | 🟡 |
-| Publish training + evaluation scripts in 	  | 🟡 |
+| Publish training + evaluation scripts 	  | 🟡 |
 | **Pre-process Java files to AST paths with Code2Vec script** | 🔲 |
 | **Convert AST-path files to embeddings using Code2Vec pretrained model** | 🔲 |
 | **Build fully-connected PyG graphs & save locally** | 🔲 |
