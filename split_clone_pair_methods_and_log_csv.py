@@ -10,6 +10,7 @@ from pathlib import Path
 # ── CONFIG ─────────────────────────────────────────────────────
 DATASET_ROOT = Path("./dataset/shuffled_split_dataset")
 OUTPUT_ROOT  = Path("./dataset/processed-clone-pairs")
+
 DATASETS = [
     ("false_semantic_clones_split", 0),
     ("true_semantic_clones_split",  1),
@@ -210,9 +211,11 @@ def process_split(source_dir: Path,
 def main():
     for split in SPLITS:
         split_dir = OUTPUT_ROOT / split  # ① shared target
-        (split_dir / "clone-pairs-csv").mkdir(parents=True, exist_ok=True)
+        # (split_dir / "clone-pairs-csv").mkdir(parents=True, exist_ok=True)
+        split_dir.mkdir(parents=True, exist_ok=True)
 
-        csv_path = split_dir / "clone-pairs-csv" / "clone_pairs.csv"
+        csv_path = OUTPUT_ROOT / f"{split}_clone_pairs.csv"
+        csv_path.parent.mkdir(parents=True, exist_ok=True)  # ensure folder exists
         with csv_path.open("w", newline="", encoding="utf-8") as csvfile:
             writer = csv.writer(csvfile)
 
