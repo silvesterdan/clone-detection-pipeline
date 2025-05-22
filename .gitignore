@@ -26,3 +26,7 @@ VENV/
 # OS junk
 .DS_Store
 Thumbs.db
+
+# Ignore model contents but keep folder
+code2vec_mod/models/java14_model/*
+!code2vec_mod/models/java14_model/.gitkeep
