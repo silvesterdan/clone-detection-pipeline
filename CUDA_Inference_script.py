@@ -35,7 +35,7 @@ from tqdm import tqdm
 
 # ── repo-local imports (leave as-is) ────────────────────────────
 from ml_models.models import MethodEncoder, build_clf_head
-from CUDA_training_pipeline import (
+from CUDA_training_script import (
     build_map,
     embed_file,
     FilePairDataset,
@@ -46,7 +46,7 @@ from CUDA_training_pipeline import (
 # 0.  CLI & environment
 # ────────────────────────────────────────────────────────────────
 parser = argparse.ArgumentParser()
-parser.add_argument("--ckpt", default="ml_models/best-GCN-A.pt",
+parser.add_argument("--ckpt", default="ml_models/best-GGNN-E.pt",
                     help="checkpoint with keys enc, head, thr")
 parser.add_argument("--batch", type=int, default=64,
                     help="mini-batch size for pair loader")
