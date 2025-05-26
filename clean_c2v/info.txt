@@ -1,0 +1,2 @@
+The cleaned AST paths from the preprocessed code2vec will be places herre when the
+run_preprocess.py pipeline will be ran.
