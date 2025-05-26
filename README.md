@@ -43,7 +43,7 @@ PyG‑ready graphs‑{split}/  (binary `.pt`)
 **WSL requirement**  
 Stage ④ relies on original *code2vec* bash scripts.  
 Windows users must enable **Windows Subsystem for Linux (WSL)** – see video tutorial  
-*[link‑to‑be‑added]*.
+*[Install Windows Subsystem for Linux (WSL)](https://www.youtube.com/watch?v=gTf32sX9ci0&t=85s&ab_channel=TechWithCosta)*.
 
 ---
 
