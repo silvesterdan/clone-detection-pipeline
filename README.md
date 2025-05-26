@@ -1,5 +1,7 @@
+# Semantic (Type-4) Code Clone Detection via Graph Neural Networks with Code2Vec Embeddings for Improved Software Maintainability
 
-# Dataset Pre‑processing & Graph‑Building Pipeline
+
+## Dataset Pre‑processing & Graph‑Building Pipeline
 
 ## Context
 This repository hosts the **entire data‑ingestion tool‑chain** for my FYP  
