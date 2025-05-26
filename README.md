@@ -63,6 +63,33 @@ Windows users must enable **Windows Subsystem for Linux (WSL)** – see video
 before re‑splitting, loops the validator until you type `YES`, and aborts on first
 non‑zero exit code.
 
+### Console prompts: split & validator
+
+When you run **`python run_preprocess.py`** you will see two interactive checkpoints.
+
+#### 1&nbsp;&nbsp;Split / Shuffle prompt
+```text
+Do you want to run the dataset splitting stage?
+This will override any manual fixes. (y/n):
+```
+* **`y`** → re‑creates fresh `train / valid / test` folders.  
+  Use only the **first** time (or when you intentionally want a new split).
+* **`n`** → keeps existing data **untouched** — recommended after you’ve already
+  corrected syntax errors or made other manual edits.
+
+#### 2&nbsp;&nbsp;Method‑Validator confirmation
+After each split is scanned you’ll get:
+```text
+INPUT REQUIRED: Please enter 'YES' after you’ve fixed every file listed above
+or if no errors were reported (ready to continue):
+```
+* Open every file listed by the validator, patch syntax issues, **save**.
+* When **all** errors are gone, type **`YES`** (uppercase).  
+  Only then will the pipeline advance to the Code2Vec `preprocess.sh` stage.
+
+> Skipping this step (or typing anything other than `YES`) lets Code2Vec silently
+> skip the bad files, which later causes missing graphs and runtime errors during
+> training or inference.
 ---
 
 ## Quick Start
