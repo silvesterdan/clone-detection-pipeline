@@ -201,7 +201,10 @@ follow the video guide *[link‑to‑be‑added]*, then re‑run.
 
 
 
-PRs welcome 🙂
+## 🤝 Contributing
+
+Pull Requests (PRs) are welcome 🙂  
+If you spot an issue or have an improvement, feel free to fork and submit a PR.
 
 
 
