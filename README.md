@@ -45,6 +45,25 @@ Stage ④ relies on original *code2vec* bash scripts.
 Windows users must enable **Windows Subsystem for Linux (WSL)** – see video tutorial  
 *[Install Windows Subsystem for Linux (WSL)](https://www.youtube.com/watch?v=gTf32sX9ci0&t=85s&ab_channel=TechWithCosta)*.
 
+** Code2Vec pre‑trained model (required for Stage ④  & used again in Stage ⑦) **
+
+The Code2Vec tokenizer expects the original **Java‑14 model**.
+
+1. Click the link below to download the 1.4 GB archive:  
+   [Download Code2Vec Java‑14 model](https://s3.amazonaws.com/code2vec/model/java14m_model.tar.gz)
+
+2. Unzip it and place the extracted folder **exactly** here:
+
+```
+code2vec_mod/models/java14_model/
+├── dict.pkl
+├── model.keras
+└── … (other model files)
+```
+
+The preprocessing scripts are hard‑coded to that path, so no extra flags
+are needed.
+
 ---
 
 ## Stage‑by‑Stage Details
