@@ -35,4 +35,4 @@ code2vec_mod/models/java14_model/*
 graphs-train/*.pt
 graphs-val/*.pt
 graphs-test/*.pt
-"code2vec_mod/wsl-venv/" 
+code2vec_mod/wsl-venv/
