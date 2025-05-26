@@ -90,6 +90,20 @@ or if no errors were reported (ready to continue):
 > Skipping this step (or typing anything other than `YES`) lets Code2Vec silently
 > skip the bad files, which later causes missing graphs and runtime errors during
 > training or inference.
+
+### Next steps: training & inference
+
+Once **all preprocessing stages complete successfully** you can move straight to
+model work:
+
+| Script | Purpose | Notes |
+|--------|---------|-------|
+| `CUDA_training_script.py` | Trains the GNN on the freshly-generated `graphs-train/ val/ test/` folders. | Requires a CUDA-enabled GPU and the environment specified in `requirements.txt`. |
+| `CUDA_inference_script.py` | Runs inference on any `graphs-*` folder using the **pre-trained weights** bundled in the repo. | Can be executed immediately — preprocessing is not mandatory if you only want to reproduce baseline results. |
+
+> **Tip:** if you train a new model, point the inference script to your checkpoint via  
+> `--weights path/to/model.pt`.
+
 ---
 
 ## Quick Start
