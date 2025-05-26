@@ -84,7 +84,7 @@ INPUT REQUIRED: Please enter 'YES' after you’ve fixed every file listed above
 or if no errors were reported (ready to continue):
 ```
 * Open every file listed by the validator, patch syntax issues, **save**.
-* When **all** errors are gone, type **`YES`** (uppercase).  
+* When **all** errors are gone, type **`YES`** (uppercase/lowercase).  
   Only then will the pipeline advance to the Code2Vec `preprocess.sh` stage.
 
 > Skipping this step (or typing anything other than `YES`) lets Code2Vec silently
