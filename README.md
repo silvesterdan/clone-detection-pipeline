@@ -56,9 +56,10 @@ The Code2Vec tokenizer expects the original **Java‑14 model**.
 
 ```
 code2vec_mod/models/java14_model/
-├── dict.pkl
-├── model.keras
-└── … (other model files)
+├── dictionaries.bin
+├── saved_model_iter8.release.data-00000-of-00001
+├── saved_model_iter8.release.index
+└── saved_model_iter8.release.meta
 ```
 
 The preprocessing scripts are hard‑coded to that path, so no extra flags
