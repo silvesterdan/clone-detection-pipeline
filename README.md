@@ -1,79 +1,105 @@
-Dataset Pre-processing Pipeline — Current Status
-===============================================
 
-Context
--------
-This repository now contains the cleaned up code for my *FYP*  of my Semantic (Type‑4)
-Code‑Clone‑Detection project.  The core model & evaluation code is already
-final (submitted). I’m currently polishing the **data‑ingestion** layer so
-new users can reproduce results with a single command.
+# Dataset Pre‑processing & Graph‑Building Pipeline
 
-Pipeline Overview
------------------
-    raw GPTCloneBench folders
-                │
-                ▼  ① split_dataset.py
-    train / valid / test clone‑pair files
-                │
-                ▼  ② prepare_clone_dataset.py
-    individual <method>.java files  +  clone_pairs.csv
+## Context
+This repository hosts the **entire data‑ingestion tool‑chain** for my FYP  
+*“Semantic (Type‑4) Code‑Clone Detection via GNNs and Code2Vec Embeddings”*.
 
-Stage details
--------------
-  Stage ① – split_dataset.py
-      • Reads raw true_semantic_clones/ & false_semantic_clones/
-      • Stratified shuffle → train / valid / test (60 / 20 / 20)
+* **Model code & evaluation** are already frozen.  
+* This pipeline lets **anyone** recreate the exact training graphs with **one command**.
 
-  Stage ② – prepare_clone_dataset.py
-      • Extracts 2 top‑level methods from every clone‑pair file
-      • De‑duplicates(using method hashing) identical bodies across clone types (per split)
-      • Saves one .java per unique method + clone_pairs.csv with labels
+> **TL;DR** `python run_preprocess.py` takes raw GPTCloneBench data and  
+> outputs ready‑to‑train `graphs‑{train|val|test}/` folders.
 
-Both stages are chained by **run_preprocess.py** (tiny wrapper that just
-calls them in order).
+---
 
-Quick start
------------
-    # clone repo & cd into it
-    python -m venv .venv && source .venv/bin/activate   # optional
-    pip install -r requirements.txt
+## Pipeline Overview
 
-    # 1‑click preprocessing
-    python run_preprocess.py
+```text
+raw GPTCloneBench
+        │
+        ▼ ① shuffle_split_dataset.py
+train / valid / test clone‑pair folders
+        │
+        ▼ ② split_clone_pair_methods_and_log_csv.py
+one <method>.java per file  +  clone_pairs.csv
+        │
+        ▼ ③ Java MethodValidator (jar)
+validated processed‑clone‑pairs/{train|val|test}
+        │
+        ▼ ④ code2vec_mod/preprocess.sh   (runs **inside WSL**)
+AST‑path .c2v files  +  id‑mapping
+        │
+        ▼ ⑤ code2vec_strip_id_from_c2v_and_save_to_txtFile_ID.py
+*.txt lists of AST‑path IDs  per split
+        │
+        ▼ ⑥ check_id_ranges.py
+verifies contiguous 0..N IDs (no gaps / dups)
+        │
+        ▼ ⑦ convert_c2v_AST_paths_to_GNN_custom_embeddings.py {train|val|test}
+PyG‑ready graphs‑{split}/  (binary `.pt`)
+```
 
-    # → produces:
-    #   processed-clone-pairs/
-    #     ├── train/
-    #     │   ├── 0.java 1.java …
-    #     │   └── clone-pairs-csv/clone_pairs.csv
-    #     └── valid/ …   test/ …
+**WSL requirement**  
+Stage ④ relies on original *code2vec* bash scripts.  
+Windows users must enable **Windows Subsystem for Linux (WSL)** – see video tutorial  
+*[link‑to‑be‑added]*.
 
-No command‑line flags are required yet (paths are hard‑coded), but they will
-be exposed in a future commit.
+---
 
-Why fewer .java files than before?
-----------------------------------
-The new pipeline shares one hash-map per split, so it de-duplicates method files across true and false semantic folders. If the exact same helper method appears in both, it is stored once and referenced by both rows in clone_pairs.csv.
+## Stage‑by‑Stage Details
 
-In the old scripts each folder had its own hash-map and ID counter; the map was reset when the next folder started, so identical methods were saved twice (once per folder) and given different IDs. The shared map is why the file count now drops compared to those earlier, folder-specific dumps.
+| # | Script / File | Responsibility |
+|---|---------------|----------------|
+| **①** | `shuffle_split_dataset.py` | Stratified shuffle of *true* and *false* semantic clone folders → `train / valid / test` (60 / 20 / 20). |
+| **②** | `split_clone_pair_methods_and_log_csv.py` | Extracts the **two top‑level methods** from each clone‑pair file.<br>Generates one `.java` per **unique** method (hash‑dedup) and logs pairs & labels to `clone_pairs.csv`. |
+| **③** | *MethodValidator JAR* | Parses every `.java` to ensure it compiles as a valid method.<br>**Manual fixes applied:** syntax errors were corrected for each split (**train 10**, **valid 6**, **test 4**).<br>If syntax errors remain, `code2vec/preprocess.sh` will skip those files causing missing graphs against `clone_pairs.csv`. |
+| **④** | `code2vec_mod/preprocess.sh` & `bootstrap_env.sh` | Original *code2vec* tokenizer — emits AST‑path `.c2v` files. Automatically runs in WSL on Windows, Bash on \*nix. |
+| **⑤** | `code2vec_strip_id_from_c2v_and_save_to_txtFile_ID.py` | Extracts numeric IDs from `.c2v` headers → compact `.txt` lists per split. |
+| **⑥** | `check_id_ranges.py` | Verifies each split’s ID list is **contiguous starting at 0** (no gaps / duplicates). |
+| **⑦** | `convert_c2v_AST_paths_to_GNN_custom_embeddings.py` | For each split:<br>1. Loads `.c2v` AST paths<br>2. Encodes via a Code2Vec model<br>3. Saves PyTorch‑Geometric graphs → `graphs‑{train|val|test}/`. |
+
+`run_preprocess.py` chains all stages, detects Windows vs Linux/macOS, prompts
+before re‑splitting, loops the validator until you type `YES`, and aborts on first
+non‑zero exit code.
+
+---
+
+## Quick Start
+
+```bash
+# clone repo & enter
+python -m venv .venv && .\.venv\Scripts\activate      # Windows
+# source .venv/bin/activate                              # macOS/Linux
+
+pip install -r requirements.txt
+
+# ---- ONE COMMAND ----
+python run_preprocess.py
+# ----------------------
+
+# Outputs:
+# dataset/
+#   ├─ processed-clone-pairs/{train,val,test}/
+#   ├─ graphs-train/   *.pt
+#   ├─ graphs-val/     *.pt
+#   └─ graphs-test/    *.pt
+```
+
+**First run on Windows:** if WSL isn’t installed the script will prompt you —  
+follow the video guide *[link‑to‑be‑added]*, then re‑run.
+
+---
+
+## Troubleshooting
+
+| Symptom | Likely Cause | Fix |
+|---------|--------------|-----|
+| `bash not found` on Windows | WSL missing. | Install WSL (see video). |
 
 
 
-### Roadmap / cleanup checklist  (✅ done · 🟡 in-progress · 🔲 pending)
-
-| Task | Status |
-|------|--------|
-| Final model & report (FYP submission) | ✅ |
-| Consolidate preprocessing into `run_preprocess.py` | ✅ |
-| Replace noisy per-file logging with per-split summaries | ✅ |
-| Expose `--root` / `--seed` flags via `argparse` | 🟡 |
-| Publish training + evaluation scripts 	  | 🟡 |
-| **Pre-process Java files to AST paths with Code2Vec script** | 🔲 |
-| **Convert AST-path files to embeddings using Code2Vec pretrained model** | 🔲 |
-| **Build fully-connected PyG graphs & save locally** | 🔲 |
-| **Training script for PyG graphs (epoch logs + final metric plots)** | 🔲 |
-| **Inference script: load trained model, run on test split, print precision/recall/F1** | 🔲 |
-| Write full usage guide in wiki | 🔲 |
+PRs welcome 🙂
 
 
-Last updated: 9-05-2025
+
