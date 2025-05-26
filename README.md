@@ -99,7 +99,7 @@ model work:
 | Script | Purpose | Notes |
 |--------|---------|-------|
 | `CUDA_training_script.py` | Trains the GNN on the freshly-generated `graphs-train/ val/ test/` folders. | Requires a CUDA-enabled GPU and the environment specified in `requirements.txt`. |
-| `CUDA_inference_script.py` | Runs inference on any `graphs-*` folder using the **pre-trained weights** bundled in the repo. | Can be executed immediately — preprocessing is not mandatory if you only want to reproduce baseline results. |
+| `CUDA_inference_script.py` | Runs inference on test `graphs-*` folder using the **pre-trained weights** bundled in the repo. | Can be executed immediately — training is not mandatory if you only want to reproduce baseline results. |
 
 > **Tip:** if you train a new model, point the inference script to your checkpoint via  
 > `--weights path/to/model.pt`.
@@ -107,24 +107,65 @@ model work:
 ---
 
 ## Quick Start
+### Set-up (run these in **Command Prompt / PowerShell**)
 
-```bash
-# clone repo & enter
+```cmd
+:: clone the repo
+git clone https://github.com/silvesterdan/clone-detection-pipeline.git
+cd clone-detection-pipeline        :: enter project root
+
+:: create & activate a fresh venv  (Windows/Linux)
+python -m venv .venv
+
 python -m venv .venv && .\.venv\Scripts\activate      # Windows
 # source .venv/bin/activate                              # macOS/Linux
 
-pip install -r requirements.txt
+### Environment & installation options
 
-# ---- ONE COMMAND ----
-python run_preprocess.py
-# ----------------------
+By default we assume a **CUDA-capable GPU**.
 
-# Outputs:
-# dataset/
-#   ├─ processed-clone-pairs/{train,val,test}/
-#   ├─ graphs-train/   *.pt
-#   ├─ graphs-val/     *.pt
-#   └─ graphs-test/    *.pt
+```bash
+# GPU setup
+pip install -r requirements.txt          # full CUDA build
+```
+
+No CUDA? Training will still run (just slower).  
+Create your virtual-env and install the two staged CPU lists instead:
+
+```bash
+pip install -r requirements_cpu_stage1.txt
+pip install -r requirements_cpu_stage2.txt
+```
+
+(Stage 1 = common science deps, Stage 2 = PyTorch-CPU + PyG.)
+
+---
+
+### Output directory layout
+
+After a successful run you should see:
+
+```
+dataset/
+└─ processed-clone-pairs/
+   ├─ train/
+   │  ├─ 0.java 1.java …          # individual methods
+   │  └─                            (no CSV here)
+   ├─ val/
+   │  ├─ … .java
+   │  └─
+   └─ test/
+      ├─ … .java
+      └─
+
+   train_clone_pairs.csv            # CSVs live *beside* the folders
+   val_clone_pairs.csv
+   test_clone_pairs.csv
+
+graphs-train/    *.pt               # PyG graphs (repo root)
+graphs-val/      *.pt
+graphs-test/     *.pt
+
 ```
 
 **First run on Windows:** if WSL isn’t installed the script will prompt you —  
