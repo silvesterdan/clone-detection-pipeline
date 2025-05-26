@@ -115,8 +115,9 @@ def main() -> None:
     # flag = True
     while True:
         run_validator()
-        user_input = input("INPUT REQUIRED: Pleas enter 'Yes' if fixed displayed errors manually "
-                           "\n or there are no files with issues  and ready to move forward: ").upper()
+        user_input = input("INPUT REQUIRED: Please enter 'YES' after you’ve fixed every file listed above"
+                           "\n or if no errors were reported (ready to continue):").upper()
+
         if user_input == "YES":
             # flag = False
             break
