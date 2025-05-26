@@ -1,0 +1,25 @@
+# ---------------- Stage 2 : PyG + ML & utilities (CPU build) ----------------
+# Use the PyG wheel index that matches torch==2.2.1 CPU wheels
+--find-links https://data.pyg.org/whl/torch-2.2.1+cpu.html
+--extra-index-url https://pypi.org/simple
+
+# ---------------------------------------------------------------------------
+# PyG extensions (pre-built wheels for CPU)
+torch-scatter
+torch-sparse
+torch-cluster
+torch-spline-conv
+torch-geometric
+
+# ---------------------------------------------------------------------------
+# Core ML frameworks
+numpy<2.0           # NumPy 2.x breaks many compiled extensions, keep 1.x
+tensorflow>=2.14.0  # 2.14+ ships a CPU wheel by default
+
+# ---------------------------------------------------------------------------
+# Utilities
+pandas
+matplotlib
+tqdm
+scikit-learn
+

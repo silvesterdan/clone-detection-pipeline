@@ -22,7 +22,7 @@ platform‑agnostic and utterly simple to read.
 
 from __future__ import annotations
 
-import subprocess, platform
+import subprocess, platform, shlex
 import sys
 from pathlib import Path
 
@@ -34,6 +34,7 @@ SH_VENV_FILE = C2V_ROOT / "bootstrap_env.sh"
 STAGES = [
     "shuffle_split_datatset.py",          # stage 1: create train/valid/test splits
     "split_clone_pair_methods_and_log_csv.py", # stage 2: deduplicate + CSV generation
+
 ]
 SPLITS_DIR = ["train", "valid", "test"]
 
@@ -75,16 +76,39 @@ if platform.system() == "Windows":
     STAGES.append((["wsl", "bash", to_wsl_path(SH_FILE)], to_wsl_path(C2V_ROOT)))
 
 else:                  # Linux / macOS host
+    STAGES.append((["bash", str(SH_VENV_FILE)],          str(C2V_ROOT)))
     STAGES.append((["bash", str(SH_FILE)],          str(C2V_ROOT)))
+
+
+# Appending more python files to STAGES to execute after wsl bash files
+STAGES.append("code2vec_strip_id_from_c2v_and_save_to_txtFile_ID.py")
+STAGES.append("check_id_ranges.py")   # stage 3: verify each split’s preprcossed AST ID list (detect gaps)
+
+# Adding the py Script to process each data split into a PyGeo Graph data
+# Will save it into graphs-{data_type}
+STAGES.append("convert_c2v_AST_paths_to_GNN_custom_embeddings.py train")
+STAGES.append("convert_c2v_AST_paths_to_GNN_custom_embeddings.py val")
+STAGES.append("convert_c2v_AST_paths_to_GNN_custom_embeddings.py test")
 
 
 def main() -> None:
     """Run each pipeline stage sequentially; abort on first error."""
-    for script in STAGES[:2]:
-        cmd = [sys.executable, str(ROOT / script)]
-        print("\n→", " ".join(cmd))
-        subprocess.run(cmd, check=True)
+    # for script in STAGES[:2]:
+    #     cmd = [sys.executable, str(ROOT / script)]
+    #     print("\n→", " ".join(cmd))
+    #     subprocess.run(cmd, check=True)
+    run_split = input(
+        "Do you want to run the dataset splitting stage? This will override any manual fixes. (y/n): ").strip().lower()
 
+    if run_split == 'y':
+        print("Running split stage...")
+        # call your splitting function here
+        for script in STAGES[:2]:
+            cmd = [sys.executable, str(ROOT / script)]
+            print("\n→", " ".join(cmd))
+            subprocess.run(cmd, check=True)
+    else:
+        print("Skipping split stage.")
 
 
 
@@ -102,10 +126,17 @@ def main() -> None:
     print("\n INFO: All validator stages completed.")
 
 
-    for cmd, workdir in STAGES[2:]:
+    for cmd, workdir in STAGES[2:4]:
         cmd = list(map(str, cmd))               # Path → str
         print("\n→", " ".join(cmd))
         subprocess.run(cmd, check=True, cwd=C2V_ROOT)
+
+    """Run each pipeline stage sequentially; abort on first error."""
+    for script in STAGES[4:]:
+        pieces = shlex.split(script)  # NEW → turns string into list
+        cmd = [sys.executable, str(ROOT / pieces[0]), *pieces[1:]]
+        print("\n→", " ".join(cmd))
+        subprocess.run(cmd, check=True)
 
 
     print("\n INFO:  All preprocessing stages completed successfully.")

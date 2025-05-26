@@ -1,0 +1,9 @@
+# Stage 1: Core CPU-compatible PyTorch libraries
+
+# PyTorch + ecosystem (CPU builds from PyPI)
+torch==2.2.1
+torchvision==0.17.1
+torchaudio==2.2.1
+
+
+

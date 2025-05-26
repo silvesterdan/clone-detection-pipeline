@@ -1,6 +1,7 @@
 // src/main/java/org/example/MethodValidator.java
 package org.example;
 
+import java.util.Arrays;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseResult;
 import com.github.javaparser.ParserConfiguration;
@@ -16,17 +17,14 @@ import java.io.IOException;
 public class MethodValidator {
 
     public static void main(String[] args) throws IOException {
+        // CLI Parsing
         if (args.length < 1) {
-            System.err.println("Usage: java MethodValidator <path-to-processed-methods-folder>");
+            System.err.println("Usage: java -jar MethodValidator.jar <folder> [--verbose]");
             System.exit(1);
         }
-
-        // You can set your default path here
-//        String defaultPath = "processed-clone-pairs/false_semantic_clones_split/test";
-
-        // processed-clone-pairs/train
         File folder = new File(args[0]);
-//        File folder = new File(defaultPath);
+        boolean verbose = Arrays.asList(args).contains("--verbose");  // optional flag
+
         if (!folder.exists() || !folder.isDirectory()) {
             System.err.println("Error: " + folder.getAbsolutePath() + " is not a directory.");
             System.exit(1);
@@ -63,8 +61,11 @@ public class MethodValidator {
                 invalidFiles.add(javaFile.getName());
                 // Optionally log reasons
 //                 UNCOMMENT BELOW LINE TO SEE SYNTAX ERRORS!!!
-//                result.getProblems().forEach(problem -> System.out.println("   -> " + problem));
-//                System.out.println("--> " + javaFile.getName());
+                if (verbose) {
+                    System.out.println("--> " + javaFile.getName());
+                    result.getProblems().forEach(problem -> System.out.println("   -> " + problem));
+
+                }
                 continue;
             }
 
